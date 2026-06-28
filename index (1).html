@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kharcha — Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">₨</span>
+      <span class="logo-text">Kharcha</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-link" data-page="add" onclick="showPage('add',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Transaction
+      </a>
+      <a href="#" class="nav-link" data-page="transactions" onclick="showPage('transactions',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Transactions
+      </a>
+      <a href="#" class="nav-link" data-page="budget" onclick="showPage('budget',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Budget
+      </a>
+      <a href="#" class="nav-link" data-page="reports" onclick="showPage('reports',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reports
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-clear" onclick="clearAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Clear all data
+      </button>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <header class="mobile-header">
+    <div class="logo-mobile">
+      <span class="logo-icon">₨</span>
+      <span class="logo-text">Kharcha</span>
+    </div>
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ════ DASHBOARD ════ -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Overview</p>
+          <h1 class="page-title">Dashboard</h1>
+        </div>
+        <div class="month-badge" id="current-month"></div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="summary-grid">
+        <div class="summary-card balance-card">
+          <p class="card-label">Current balance</p>
+          <p class="card-value" id="dash-balance">Rs 0</p>
+          <p class="card-sub" id="dash-balance-sub">No transactions yet</p>
+        </div>
+        <div class="summary-card">
+          <p class="card-label">Total income</p>
+          <p class="card-value income-val" id="dash-income">Rs 0</p>
+          <p class="card-sub" id="dash-income-count">0 transactions</p>
+        </div>
+        <div class="summary-card">
+          <p class="card-label">Total expenses</p>
+          <p class="card-value expense-val" id="dash-expense">Rs 0</p>
+          <p class="card-sub" id="dash-expense-count">0 transactions</p>
+        </div>
+        <div class="summary-card">
+          <p class="card-label">Savings rate</p>
+          <p class="card-value" id="dash-savings">0%</p>
+          <p class="card-sub">of income saved</p>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="charts-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h2 class="chart-title">Income vs Expenses</h2>
+            <p class="chart-sub">Last 6 months</p>
+          </div>
+          <div class="chart-wrap" style="height:240px">
+            <canvas id="barChart" role="img" aria-label="Bar chart showing income vs expenses over the last 6 months">No data.</canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">By category</h2>
+            <p class="chart-sub">Expenses breakdown</p>
+          </div>
+          <div class="chart-wrap" style="height:200px">
+            <canvas id="donutChart" role="img" aria-label="Donut chart showing expenses by category">No data.</canvas>
+          </div>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+      </div>
+
+      <!-- Recent transactions -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Recent transactions</h2>
+          <button class="link-btn" onclick="showPage('transactions', document.querySelector('[data-page=transactions]'))">View all →</button>
+        </div>
+        <div id="dash-recent-list">
+          <p class="empty-msg">No transactions yet. <button class="link-btn" onclick="showPage('add', document.querySelector('[data-page=add]'))">Add one →</button></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ ADD TRANSACTION ════ -->
+    <section class="page" id="page-add">
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Record</p>
+          <h1 class="page-title">Add transaction</h1>
+        </div>
+      </div>
+
+      <div class="form-layout">
+        <div class="form-card">
+          <!-- Type toggle -->
+          <div class="type-toggle">
+            <button class="toggle-btn active" id="btn-income" onclick="setType('income')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              Income
+            </button>
+            <button class="toggle-btn" id="btn-expense" onclick="setType('expense')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+              Expense
+            </button>
+          </div>
+
+          <div class="form-fields">
+            <div class="field-group">
+              <label class="field-label" for="f-desc">Description *</label>
+              <input class="field-input" type="text" id="f-desc" placeholder="e.g. Monthly salary, Rent payment…" maxlength="60" />
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label" for="f-amt">Amount (Rs) *</label>
+                <input class="field-input" type="number" id="f-amt" placeholder="0" min="1" step="1" />
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="f-date">Date *</label>
+                <input class="field-input" type="date" id="f-date" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="f-cat">Category</label>
+              <select class="field-input" id="f-cat">
+                <optgroup label="Income">
+                  <option value="Salary">Salary</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Business">Business</option>
+                  <option value="Gift">Gift / Eid</option>
+                  <option value="Other Income">Other income</option>
+                </optgroup>
+                <optgroup label="Expenses">
+                  <option value="Food">Food & dining</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Bills">Bills & utilities</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Health">Health</option>
+                  <option value="Education">Education</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Savings">Savings</option>
+                  <option value="Other">Other</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="f-note">Note (optional)</label>
+              <input class="field-input" type="text" id="f-note" placeholder="Any extra details…" maxlength="120" />
+            </div>
+
+            <div id="form-error" class="form-error" style="display:none"></div>
+
+            <button class="submit-btn" id="submit-btn" onclick="addTransaction()">
+              Add transaction
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick tips -->
+        <div class="tips-card">
+          <h3 class="tips-title">Quick tips</h3>
+          <ul class="tips-list">
+            <li>Record transactions as soon as they happen to stay accurate.</li>
+            <li>Use the Note field to add context, like a receipt number or vendor name.</li>
+            <li>Set a monthly budget in the Budget page to get spending alerts.</li>
+            <li>Check Reports to see where your money goes each month.</li>
+          </ul>
+
+          <div class="quick-stats" id="quick-stats">
+            <div class="qstat">
+              <span class="qstat-label">This month's expenses</span>
+              <span class="qstat-val expense-val" id="qs-month-exp">Rs 0</span>
+            </div>
+            <div class="qstat">
+              <span class="qstat-label">Transactions today</span>
+              <span class="qstat-val" id="qs-today">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ TRANSACTIONS ════ -->
+    <section class="page" id="page-transactions">
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">History</p>
+          <h1 class="page-title">Transactions</h1>
+        </div>
+        <button class="export-btn" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label class="filter-label">Type</label>
+          <select class="filter-select" id="filter-type" onchange="applyFilters()">
+            <option value="all">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <select class="filter-select" id="filter-cat" onchange="applyFilters()">
+            <option value="all">All categories</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Search</label>
+          <input class="filter-input" type="text" id="filter-search" placeholder="Search description…" oninput="applyFilters()" />
+        </div>
+        <button class="clear-filters-btn" onclick="clearFilters()">Reset</button>
+      </div>
+
+      <div class="txn-summary-bar" id="txn-summary-bar"></div>
+
+      <div class="txn-table-wrap">
+        <table class="txn-table">
+          <thead>
+            <tr>
+              <th onclick="sortBy('date')" class="sortable">Date <span class="sort-icon" id="sort-date">↕</span></th>
+              <th>Description</th>
+              <th>Category</th>
+              <th onclick="sortBy('amount')" class="sortable">Amount <span class="sort-icon" id="sort-amount">↕</span></th>
+              <th>Type</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="txn-tbody"></tbody>
+        </table>
+      </div>
+      <div id="txn-empty" class="empty-msg" style="display:none">No transactions match your filters.</div>
+    </section>
+
+    <!-- ════ BUDGET ════ -->
+    <section class="page" id="page-budget">
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Control</p>
+          <h1 class="page-title">Monthly budget</h1>
+        </div>
+      </div>
+
+      <div class="budget-layout">
+        <div class="budget-form-card">
+          <h3 class="section-title" style="margin-bottom:1rem">Set category budgets</h3>
+          <div id="budget-fields"></div>
+          <button class="submit-btn" style="margin-top:1rem" onclick="saveBudgets()">Save budgets</button>
+          <p id="budget-saved-msg" class="save-msg" style="display:none">Budgets saved!</p>
+        </div>
+
+        <div class="budget-status-card">
+          <h3 class="section-title" style="margin-bottom:1rem">This month's spending</h3>
+          <div id="budget-status-list">
+            <p class="empty-msg">Set budgets on the left to see your progress here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ REPORTS ════ -->
+    <section class="page" id="page-reports">
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Insights</p>
+          <h1 class="page-title">Reports</h1>
+        </div>
+        <select class="filter-select" id="report-month" onchange="renderReports()">
+        </select>
+      </div>
+
+      <div class="report-grid">
+        <div class="report-stat-card">
+          <p class="card-label">Month income</p>
+          <p class="card-value income-val" id="rpt-income">Rs 0</p>
+        </div>
+        <div class="report-stat-card">
+          <p class="card-label">Month expenses</p>
+          <p class="card-value expense-val" id="rpt-expense">Rs 0</p>
+        </div>
+        <div class="report-stat-card">
+          <p class="card-label">Net</p>
+          <p class="card-value" id="rpt-net">Rs 0</p>
+        </div>
+        <div class="report-stat-card">
+          <p class="card-label">Top expense</p>
+          <p class="card-value" id="rpt-top" style="font-size:1.1rem">—</p>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h2 class="chart-title">Daily spending</h2>
+            <p class="chart-sub">Expenses by day this month</p>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="lineChart" role="img" aria-label="Line chart showing daily expenses">No data.</canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Category split</h2>
+            <p class="chart-sub">Where your money went</p>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="hbarChart" role="img" aria-label="Horizontal bar chart of expenses by category">No data.</canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
